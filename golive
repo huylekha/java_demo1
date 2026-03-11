@@ -1,0 +1,59 @@
+I. ODS
+   Tạo account và cấp quyền read cho:
+     + Schema: STG_ING
+     + Table: TCLI, TCLNM, TCLIC, TCVGC, TPOL, TCVG, TAMEX, TAPPV, TZAGT
+
+
+II. policy-inquiry-service
+
+1. Helmchart
+- Copy Helmchart từ https://git.dai-ichi-life.com.vn/gitops/uat/helm-chart-ace-uat/-/tree/main/policy-inquiry-service?ref_type=heads
+- Rename file builds/policy-inquiry-service-uat.buildversion --> builds/policy-inquiry-service.buildversion
+- Update file builds/policy-inquiry-service.buildversion với nội dung là: 20260203-sr20522-526d1670
+- Update file value.yaml với các giá trị cho môi trường PRD:
+    + imagePullSecrets
+    + defaultPolicies: chỉ cập nhật giá trị "data" cho item "name: odsconn". (Với thông tin kết nối database ODS trên PRD được tạo ở bước I.)
+    + setdbparms
+      (Với thông tin kết nối database ODS trên PRD được tạo ở bước I.)
+- Rename file values.uat.yaml --> values.prd.yaml
+- Update file values.prd.yaml với các giá trị cho môi trường PRD:
+    + nameOverride: xóa/comment tham số này. Nó sẽ dùng giá trị trong file value.yaml
+    + fullnameOverride: xóa/comment tham số này. Nó sẽ dùng giá trị trong file value.yaml
+    + configurations:
+      - elastic-4-117-prd
+      - policy-inquiry-service-db-secret
+    + resources
+    + autoscaling
+
+2. ArgoCD
+   Tạo Application với tên "policy-inquiry-service", dùng Helmchart ở trên và chọn file value lần lượt là "values.yaml", "values.prd.yaml"
+
+3. DataPower
+   Tạo DataPower cho app trên
+
+III. underwriting-evaluation-service
+
+1. Helmchart
+- Copy Helmchart từ https://git.dai-ichi-life.com.vn/gitops/uat/helm-chart-ace-uat/-/tree/main/underwriting-evaluation-service?ref_type=heads
+- Rename file builds/underwriting-evaluation-service-uat.buildversion --> builds/underwriting-evaluation-service.buildversion
+- Update file builds/underwriting-evaluation-service.buildversion với nội dung là: 20260210-sr20894-ca3a78a0
+- Update file value.yaml với các giá trị cho môi trường PRD:
+    + imagePullSecrets
+    + defaultPolicies: chỉ cập nhật giá trị "data" cho item "name: odsconn". (Với thông tin kết nối database ODS trên PRD được tạo ở bước I.)
+    + setdbparms
+      (Với thông tin kết nối database ODS trên PRD được tạo ở bước I.)
+- Rename file values.uat.yaml --> values.prd.yaml
+- Update file values.prd.yaml với các giá trị cho môi trường PRD:
+    + nameOverride: xóa/comment tham số này. Nó sẽ dùng giá trị trong file value.yaml
+    + fullnameOverride: xóa/comment tham số này. Nó sẽ dùng giá trị trong file value.yaml
+    + configurations:
+      - elastic-4-117-prd
+      - underwriting-evaluation-service-db-secret
+    + resources
+    + autoscaling
+
+2. ArgoCD
+   Tạo Application với tên "underwriting-evaluation-service", dùng Helmchart ở trên và chọn file value lần lượt là "values.yaml", "values.prd.yaml"
+
+3. DataPower
+   Tạo DataPower cho app trên
